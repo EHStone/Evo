@@ -177,43 +177,44 @@ def create_challenging_instances():
 # GENERATE ALL INSTANCES
 # ============================================================================
 
-def generate_all_instances():
+def generate_all_instances(print_summary = True):
     """Generate and save all reference instances"""
     all_instances = {
         "basic": create_basic_instances(),
         "challenging": create_challenging_instances()
     }
     
-    # Print summary
-    print("=" * 70)
-    print("KV6018 CARGO CONTAINER LOADING - REFERENCE INSTANCES")
-    print("=" * 70)
-    print()
-    
-    print("BASIC INSTANCES")
-    print("-" * 70)
-    for inst in all_instances["basic"]:
-        print(f"\n{inst.name}:")
-        print(f"  Container: {inst.container.width}m × {inst.container.depth}m, "
-              f"max weight: {inst.container.max_weight}kg")
-        print(f"  Cylinders: {len(inst.cylinders)}")
-        total_weight = sum(c.weight for c in inst.cylinders)
-        print(f"  Total weight: {total_weight}kg")
-    
-    print("\n" + "=" * 70)
-    print("CHALLENGING INSTANCES")
-    print("-" * 70)
-    for inst in all_instances["challenging"]:
-        print(f"\n{inst.name}:")
-        print(f"  Container: {inst.container.width}m × {inst.container.depth}m, "
-              f"max weight: {inst.container.max_weight}kg")
-        print(f"  Cylinders: {len(inst.cylinders)}")
-        total_weight = sum(c.weight for c in inst.cylinders)
-        print(f"  Total weight: {total_weight}kg")
-    
-    print("\n" + "=" * 70)
-    print("\nJSON OUTPUT:")
-    print("=" * 70)
+    if print_summary:
+        # Print summary
+        print("=" * 70)
+        print("KV6018 CARGO CONTAINER LOADING - REFERENCE INSTANCES")
+        print("=" * 70)
+        print()
+        
+        print("BASIC INSTANCES")
+        print("-" * 70)
+        for inst in all_instances["basic"]:
+            print(f"\n{inst.name}:")
+            print(f"  Container: {inst.container.width}m × {inst.container.depth}m, "
+                f"max weight: {inst.container.max_weight}kg")
+            print(f"  Cylinders: {len(inst.cylinders)}")
+            total_weight = sum(c.weight for c in inst.cylinders)
+            print(f"  Total weight: {total_weight}kg")
+        
+        print("\n" + "=" * 70)
+        print("CHALLENGING INSTANCES")
+        print("-" * 70)
+        for inst in all_instances["challenging"]:
+            print(f"\n{inst.name}:")
+            print(f"  Container: {inst.container.width}m × {inst.container.depth}m, "
+                f"max weight: {inst.container.max_weight}kg")
+            print(f"  Cylinders: {len(inst.cylinders)}")
+            total_weight = sum(c.weight for c in inst.cylinders)
+            print(f"  Total weight: {total_weight}kg")
+        
+        print("\n" + "=" * 70)
+        print("\nJSON OUTPUT:")
+        print("=" * 70)
     
     # Output as JSON
     output = {
@@ -221,7 +222,8 @@ def generate_all_instances():
         "challenging_instances": [inst.to_dict() for inst in all_instances["challenging"]]
     }
     
-    print(json.dumps(output, indent=2))
+    if print_summary:
+        print(json.dumps(output, indent=2))
     
     return output
 
