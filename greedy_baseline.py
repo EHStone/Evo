@@ -74,7 +74,7 @@ def run_baseline(current_inst):
             # print(f"Placed Cylinder {cyl.id} (First) at Center")
             
         else:
-            max_attempts = 1000 
+            max_attempts = 100
             
             for num_attempts in range(max_attempts):
                 rand_x = random.uniform(cyl.radius, cont_w - cyl.radius)
