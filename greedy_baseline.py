@@ -1,5 +1,5 @@
 import custom_visualiser as vis
-import container_instances as inst
+# import container_instances as inst
 import ordered_packing as order
 import fitness
 import numpy as np

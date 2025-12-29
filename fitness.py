@@ -1,6 +1,6 @@
 import custom_visualiser as vis
 import math
-
+ #### TODO consider missing cylinders (i.e. punish if not all cylinders included)
 def calc_com(solution):
     total_weight = 0
     sum_moment_x = 0
@@ -35,26 +35,35 @@ def check_com(instance, solution):
         return solution_weight, True, com_X, com_Y
     return solution_weight, False, com_X, com_Y
 
+def check_num_unplaced(instance, solution):
+    total_cylinders = instance['cylinders']
+    if len(total_cylinders) > len(solution):
+        return len(total_cylinders) - len(solution)
+    return 0
+
 def check_fitness(instance, solution):
     fitness = 0
+    valid = ""
     if not solution:
         print("No cylinders placed.")
         return 1000, 0, 0
-    # print(solution)
 
     solution_weight, com_result, com_X, com_Y = check_com(instance, solution)
     
     if com_result: ##COM Failed
         fitness += 100 ## arbitrary large positive number to represent poor fitness score
-        print("Failure, COM ", instance['name'])
+        valid = valid.join("COM Failure, ")
         
     
 
      # note that current baseline already denies overweight solution, this is purely for future use
     if check_overweight(instance, solution_weight):
         fitness += 100  ## arbitrary large positive number to represent poor fitness score
+        valid = valid.join("Overweight Failure, ")
           
-
+    unplaced_cylinders = check_num_unplaced(instance, solution)
+    fitness += (10 * unplaced_cylinders)
+    if (unplaced_cylinders > 0): valid = valid.join("Did not place all cylinders, ")
 
     ## fitness calculation based on combiunation of packing density & COM centralisation
 
@@ -94,6 +103,7 @@ def check_fitness(instance, solution):
     w_bal = 0.3
     
     fitness += (w_pack * density_cost) + (w_bal * balance_cost)
-
-    print(f"Success, Fitness: {fitness}")
+    if valid == "":
+        valid = "Success, "
+    print(f"{valid}Fitness: {fitness}")
     return fitness, com_X, com_Y
