@@ -52,7 +52,8 @@ def visualise_container(instance, show_vis = True, com_x = 0, com_y = 0, placed_
                     (com_x, com_y), 
                     radius=.1, 
                     edgecolor='black', 
-                    facecolor='red'
+                    facecolor='red',
+                    label='COM'
                 )
             ax.add_patch(com)
 
