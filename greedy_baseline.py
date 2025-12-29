@@ -1,5 +1,6 @@
 import custom_visualiser as vis
 import container_instances as inst
+import ordered_packing as order
 import fitness
 import numpy as np
 import random
@@ -49,7 +50,7 @@ def run_baseline(current_inst):
     # Container Boundaries
     cont_w = current_inst['container']['width']
     cont_h = current_inst['container']['depth']
-
+    total_attempts = 0
     # print(f"--- Processing Container ({cont_w}x{cont_h}) ---")
 
     for data in current_inst['cylinders']:
@@ -75,11 +76,12 @@ def run_baseline(current_inst):
         else:
             max_attempts = 1000 
             
-            for _ in range(max_attempts):
+            for num_attempts in range(max_attempts):
                 rand_x = random.uniform(cyl.radius, cont_w - cyl.radius)
                 rand_y = random.uniform(cyl.radius, cont_h - cyl.radius)
                 
                 cyl.set_position(rand_x, rand_y)
+
                 
                 collision = False
                 for other_cyl in placed_cylinders:
@@ -87,16 +89,21 @@ def run_baseline(current_inst):
                         collision = True
                         break 
                 
+                is_accessible = False
                 if not collision:
-                    placed_cylinders.append(cyl)
-                    total_weight += cyl.weight
-                    placed = True
-                    # print(f"Placed Cylinder {cyl.id} at ({rand_x:.2f}, {rand_y:.2f})")
-                    break 
+                    is_accessible = order.check_access(cyl, placed_cylinders) ## Check placement with relation to rear loading constraint
+                    
+                    if is_accessible: ## comment this line and un-indent following code to test without rear loading constraint
+                        placed_cylinders.append(cyl)
+                        total_weight += cyl.weight
+                        placed = True
+                        # print(f"Placed Cylinder {cyl.id} after {num_attempts} attempts")
+                        total_attempts += num_attempts
+                        break 
             
-            # if not placed:
-                # print(f"Could not place Cylinder {cyl.id} after {max_attempts} attempts.")
-
+            if not placed:
+                print(f"Could not place Cylinder {cyl.id} after {max_attempts} attempts.") 
+    print(f"Total number of attempts failed: {total_attempts}")
     fitness_score, com_X, com_Y = fitness.check_fitness(current_inst, placed_cylinders)
     vis.visualise_container(current_inst, com_x = com_X, com_y = com_Y, placed_cylinders=placed_cylinders)
 
