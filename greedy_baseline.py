@@ -2,6 +2,7 @@ import custom_visualiser as vis
 # import container_instances as inst
 import ordered_packing as order
 import fitness
+import cylinder
 import numpy as np
 import random
 
@@ -14,27 +15,27 @@ import random
 
 
 
-class Cylinder:
-    def __init__(self, id, diameter, weight):
-        self.id = id
-        self.diameter = diameter
-        self.radius = diameter / 2.0
-        self.weight = weight
-        self.x = 0
-        self.y = 0
-        self.color = (random.random(), random.random(), random.random()) # For visualisation
+# class Cylinder:
+#     def __init__(self, id, diameter, weight):
+#         self.id = id
+#         self.diameter = diameter
+#         self.radius = diameter / 2.0
+#         self.weight = weight
+#         self.x = 0
+#         self.y = 0
+#         self.color = (random.random(), random.random(), random.random()) # For visualisation
 
-    def set_position(self, x, y):
-        self.x = x
-        self.y = y
+#     def set_position(self, x, y):
+#         self.x = x
+#         self.y = y
 
-    def distance_to(self, other):
-        return np.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
+#     def distance_to(self, other):
+#         return np.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
 
-    def overlaps(self, other):
-        dist = self.distance_to(other)
-        # Check if distance is less than sum of radii (with slight buffer)
-        return dist < (self.radius + other.radius + 0.05) 
+#     def overlaps(self, other):
+#         dist = self.distance_to(other)
+#         # Check if distance is less than sum of radii (with slight buffer)
+#         return dist < (self.radius + other.radius + 0.05) 
 
 
 def run_baseline(current_inst):
@@ -55,7 +56,7 @@ def run_baseline(current_inst):
 
     for data in current_inst['cylinders']:
         
-        cyl = Cylinder(data['id'], data['diameter'], data['weight'])
+        cyl = cylinder.Cylinder(data['id'], data['diameter'], data['weight'])
 
         ## check if adding will result in overweight
         if (total_weight + cyl.weight) > current_inst['container']['max_weight']:
