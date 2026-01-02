@@ -6,7 +6,7 @@ def check_access(new_cylinder, placed_cylinders):
     for obstacle in placed_cylinders:
         ## Check for horizontal overlap
         delta_x = abs(new_cylinder.x - obstacle.x)
-        min_clearance = new_cylinder.radius + obstacle.radius + 0.05
+        min_clearance = new_cylinder.radius + obstacle.radius## + 0.05
 
         if delta_x < min_clearance:
             

@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from typing import List, Tuple
 import fitness as fitness_calc
 import cylinder
-import ordered_packing as order
+# import ordered_packing as order
 import custom_visualiser as vis
 
 
@@ -45,20 +45,10 @@ class GeneticAlgorithm:
         placed_cylinders = []
         iter = 0
         for cyl in genome_order:
-            print(cyl)
+            # print(cyl)
             cyl.set_position(genome_pos[iter][0], genome_pos[iter][1])
+            cyl.id = iter
             iter += 1
-            if placed_cylinders: ## only run checks if a cylinder has already been placed, otherwise overlap always impossible
-                for other_cyl in placed_cylinders:
-                    if cyl.overlaps(other_cyl):
-                        fitness += 100 
-            
-                is_accessible = False
-
-                is_accessible = order.check_access(cyl, placed_cylinders) ## Check placement with relation to rear loading constraint
-                
-                if not is_accessible: ## comment this to test without rear loading constraint
-                    fitness += 100
             placed_cylinders.append(cyl)
         fitness_score, com_X, com_Y = fitness_calc.check_fitness(self.instance, placed_cylinders)
         fitness += fitness_score

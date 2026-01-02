@@ -1,5 +1,7 @@
 import custom_visualiser as vis
 import math
+import ordered_packing as order
+
  #### TODO consider missing cylinders (i.e. punish if not all cylinders included)
 def calc_com(solution):
     total_weight = 0
@@ -41,6 +43,23 @@ def check_num_unplaced(instance, solution):
         return len(total_cylinders) - len(solution)
     return 0
 
+def check_overlaps(solution):
+    num_overlaps = 0
+    for cyl in solution:
+        for other_cyl in solution:
+            if other_cyl != cyl and cyl.overlaps(other_cyl):
+                num_overlaps += 1
+    return num_overlaps
+
+def check_rear_loading(solution):
+    num_inaccessible = 0
+    for cyl in solution:
+        is_accessible = order.check_access(cyl, solution) ## Check placement with relation to rear loading constraint
+        if not is_accessible:
+            num_inaccessible += 1
+    return num_inaccessible
+                
+
 def check_fitness(instance, solution):
     fitness = 0
     valid = ""
@@ -65,6 +84,13 @@ def check_fitness(instance, solution):
     fitness += (10 * unplaced_cylinders)
     if (unplaced_cylinders > 0): valid = valid.join("Did not place all cylinders, ")
 
+    num_overlaps = check_overlaps(solution)
+    fitness += (num_overlaps * 50)
+    if (num_overlaps > 0): valid = valid.join("Overlaps present, ")
+
+    num_inaccessible = check_rear_loading(solution)
+    fitness += (num_inaccessible * 50)
+    if (num_inaccessible > 0): valid = valid.join("Rear loading violation, ")
     ## fitness calculation based on combiunation of packing density & COM centralisation
 
     ## Get container dimensions again for calculation
