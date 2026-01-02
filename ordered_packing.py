@@ -13,6 +13,6 @@ def check_access(new_cylinder, placed_cylinders):
             # check bertical position (Blocking from Top)
             # If the obstacle is "above" the new cylinder 
             if obstacle.y > new_cylinder.y:
-                return False
+                return False ## Rear loading constraint failed
                 
-    return True
+    return True ## Rear loading constraint passed
