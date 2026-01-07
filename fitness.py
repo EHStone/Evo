@@ -53,10 +53,13 @@ def check_overlaps(solution):
 
 def check_rear_loading(solution):
     num_inaccessible = 0
+    previous_cylinders = []
     for cyl in solution:
-        is_accessible = order.check_access(cyl, solution) ## Check placement with relation to rear loading constraint
-        if not is_accessible:
-            num_inaccessible += 1
+        if previous_cylinders:
+            is_accessible = order.check_access(cyl, previous_cylinders) ## Check placement with relation to rear loading constraint
+            if not is_accessible:
+                num_inaccessible += 1
+        previous_cylinders.append(cyl)
     return num_inaccessible
                 
 
