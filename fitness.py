@@ -74,26 +74,26 @@ def check_fitness(instance, solution):
     
     if com_result: ##COM Failed
         fitness += 100 ## arbitrary large positive number to represent poor fitness score
-        valid = valid.join("COM Failure, ")
+        valid = valid + "COM Failure, "
         
     
 
      # note that current baseline already denies overweight solution, this is purely for future use
     if check_overweight(instance, solution_weight):
         fitness += 100  ## arbitrary large positive number to represent poor fitness score
-        valid = valid.join("Overweight Failure, ")
+        valid = valid + "Overweight Failure, "
           
     unplaced_cylinders = check_num_unplaced(instance, solution)
     fitness += (10 * unplaced_cylinders)
-    if (unplaced_cylinders > 0): valid = valid.join("Did not place all cylinders, ")
+    if (unplaced_cylinders > 0): valid = valid + "Did not place all cylinders, "
 
     num_overlaps = check_overlaps(solution)
     fitness += (num_overlaps * 50)
-    if (num_overlaps > 0): valid = valid.join("Overlaps present, ")
+    if (num_overlaps > 0): valid = valid + "Overlaps present, "
 
     num_inaccessible = check_rear_loading(solution)
     fitness += (num_inaccessible * 50)
-    if (num_inaccessible > 0): valid = valid.join("Rear loading violation, ")
+    if (num_inaccessible > 0): valid = valid + "Rear loading violation, "
     ## fitness calculation based on combiunation of packing density & COM centralisation
 
     ## Get container dimensions again for calculation
