@@ -26,6 +26,7 @@ class GeneticAlgorithm:
         self.all_cylinders = []
         self.population_size = population_size
         self.mutation_rate = mutation_rate
+        self.population = [] ## matrix with elements [ [ solution[], solution_positions[], and fitness ] [...] [...] ...]
         self.population_order = []
         self.population_positions = []
         self.generation = 0
@@ -52,11 +53,12 @@ class GeneticAlgorithm:
             placed_cylinders.append(cyl)
         fitness_score, com_X, com_Y = fitness_calc.check_fitness(self.instance, placed_cylinders)
         fitness += fitness_score
-        vis.visualise_container(self.instance, com_x = com_X, com_y = com_Y, placed_cylinders=placed_cylinders)
+        vis.visualise_container(self.instance, show_vis = False, com_x = com_X, com_y = com_Y, placed_cylinders=placed_cylinders)
+        self.population[pos].append(fitness)
         return fitness, com_X, com_Y
     
     def initialize_population(self) -> None:
-        """Initialize population with random binary strings"""
+        """Initialize population with order and positions"""
         # self.population = []
         for _ in range(self.population_size):
             # genome = self.all_cylinders[:]
@@ -70,6 +72,7 @@ class GeneticAlgorithm:
             self.population_order.append(genome)
             solution = self.place_cylinders_init(genome)
             self.population_positions.append(solution)
+            self.population.append([genome, solution])
 
     def place_cylinders_init(self, genome):
         solution = []
@@ -81,11 +84,25 @@ class GeneticAlgorithm:
             solution.append((rand_x, rand_y))
 
         return solution
-    
+
     def tournament_selection(self, tournament_size: int = 3) -> List[int]:
         """Select parent using tournament selection"""
         tournament = random.sample(self.population, tournament_size)
-        return max(tournament, key=self.fitness)
+        lst_pos = 0 
+        best_fitness = 1000
+        all_fitness = []
+        for i in tournament:
+            fitness = i[2]
+            all_fitness.append(fitness)
+            if fitness < best_fitness:
+                best_genome_pos = lst_pos
+                best_fitness = fitness
+            lst_pos += 1
+        return tournament[best_genome_pos], all_fitness
+    
+
+    ##---------------------------------------------------------------------------##
+
     
     def crossover(self, parent1: List[int], parent2: List[int]) -> Tuple[List[int], List[int]]:
         """Single-point crossover"""
@@ -152,6 +169,7 @@ class GeneticAlgorithm:
         self.generation = 0
         self.initialize_population()
         fitness_values = [self.fitness(pos) for pos in range(0, len(self.population_order))] ## change this to counter
+        print(self.tournament_selection(tournament_size=3)) ## Test tournament selection
         # if verbose:
         #     self.print_population()
         
