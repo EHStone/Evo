@@ -25,7 +25,7 @@ for instance in basic_instances:
     # if len(instance['cylinders']) > 4: ## use instance with more cylinders to test crossover
     print("Running Basic instance number ", inst_iter)
     inst_iter += 1
-    ga = genAlgo.GeneticAlgorithm(instance, population_size = 100, order_mutation_rate = .1, pos_mutation_rate = 0.15, pos_mutation_dist = 0.05)
+    ga = genAlgo.GeneticAlgorithm(instance, population_size = 25, order_mutation_rate = .1, pos_mutation_rate = 0.15, pos_mutation_dist = 0.05)
     generations_needed = ga.run_until_solution(verbose=True)
     # break
     

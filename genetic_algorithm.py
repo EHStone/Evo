@@ -35,6 +35,12 @@ class GeneticAlgorithm:
         self.box_x, self.box_y, self.box_w, self.box_h = vis.visualise_container(instance, show_vis=False)
         self.cont_w = instance['container']['width']
         self.cont_h = instance['container']['depth']
+
+        self.best_fitness = 100000
+        self.best_solution = None
+        self.best_generation = 0
+        self.best_fitness_history = []
+        self.avg_fitness_history = []
         
         for data in instance['cylinders']:
             cyl = cylinder.Cylinder(data['id'], data['diameter'], data['weight'])
@@ -179,20 +185,48 @@ class GeneticAlgorithm:
         mutated_genome = [genome[0], mutated_pos]
         return mutated_genome
     
-    def print_population(self) -> None:
+    def print_population(self, show_best = False) -> None:
         """Print current population with fitness values"""
-        print(f"\nGeneration {self.generation}:")
-        fitness_values = [self.fitness(pos) for pos in range(0, len(self.population))] ## change this to counter
-        # Sort by fitness (ascending)
-        sorted_pop = sorted(zip(self.population, fitness_values), key=lambda x: x[1])
-        print(len(self.population))
-        print(f"Best fitness: {sorted_pop[0][1]} | Genome: {''.join(map(str, sorted_pop[0][0]))}")
-        self.fitness(genome = sorted_pop[0][0], verbose = True)
-        print(f"Average fitness: {np.mean(fitness_values):.2f}")
-        print(f"Population diversity: {len(set([''.join(map(str, g)) for g in self.population]))} unique genomes")
+        if show_best:
+            print(f"\nBest Solution Found in Generation {self.best_generation}:")
+            print(f"Best fitness: {self.best_fitness} | Genome: {''.join(map(str, self.best_solution))}")
+            self.fitness(genome = self.best_solution, verbose = True)
+        else:
+            print(f"\nGeneration {self.generation}:")
+            fitness_values = [self.fitness(pos) for pos in range(0, len(self.population))] ## change this to counter
+            # Sort by fitness (ascending)
+            sorted_pop = sorted(zip(self.population, fitness_values), key=lambda x: x[1])
+            print(len(self.population))
+            print(f"Best fitness: {sorted_pop[0][1]} | Genome: {''.join(map(str, sorted_pop[0][0]))}")
+            self.fitness(genome = sorted_pop[0][0], verbose = True)
+            print(f"Average fitness: {np.mean(fitness_values):.2f}")
+            print(f"Population diversity: {len(set([''.join(map(str, g)) for g in self.population]))} unique genomes")
     
     def run_single_generation(self) -> bool:
         """Run one generation of the GA. Returns True if solution found."""
+
+        # current_fitnesses = [self.fitness(pos) for pos in range(len(self.population))]
+        
+        # min_fitness = min(current_fitnesses)
+        # if min_fitness < self.best_fitness:
+        #     xxxxx
+        
+        current_fitnesses = []
+        local_min_fitness = 10000000
+        for pos in range(len(self.population)):
+            fitness = self.fitness(pos)
+            if fitness < local_min_fitness:
+                local_min_fitness = fitness
+            if fitness < self.best_fitness:
+                self.best_fitness = fitness    
+                self.best_solution = self.population[pos]     
+                self.best_generation = self.generation
+            current_fitnesses.append(fitness)
+
+        avg_fitness = np.mean(current_fitnesses)
+        self.best_fitness_history.append(local_min_fitness)
+        self.avg_fitness_history.append(avg_fitness)
+
         # Check if we've found the optimal solution
         # min_fitness = min(self.fitness(genome) for genome in self.population)
         min_fitness = min(self.fitness(pos) for pos in range(0, len(self.population)))
@@ -225,7 +259,7 @@ class GeneticAlgorithm:
         
         return False
     
-    def run_until_solution(self, max_generations: int = 1000, verbose: bool = True) -> int:
+    def run_until_solution(self, max_generations: int = 10000, verbose: bool = True) -> int:
         """Run GA until solution is found or max generations reached"""
         self.generation = 0
         self.initialize_population()
@@ -238,6 +272,7 @@ class GeneticAlgorithm:
                 if verbose:
                     self.print_population()
                     print(f"\n*** SOLUTION FOUND in {self.generation} generations! ***")
+                    self.plot_fitness_graph() # Plot even if solution not found
                 return self.generation
             
             # if verbose and (self.generation % 100 == 0 or self.generation < 5):
@@ -245,9 +280,24 @@ class GeneticAlgorithm:
 
 
         if verbose:
-            self.print_population()
+            self.print_population(show_best = True)
             print(f"\nMax generations ({max_generations}) reached without finding solution.")
+
+        self.plot_fitness_graph() # Plot even if solution not found
         return max_generations
+    
+    def plot_fitness_graph(self):
+        """Generates a graph of fitness progression"""
+        plt.figure(figsize=(10, 6))
+        plt.plot(self.best_fitness_history, label='Best Fitness', color='blue', linewidth=2)
+        plt.plot(self.avg_fitness_history, label='Average Fitness', color='orange', linestyle='--', alpha=0.7)
+        
+        plt.title(f'Fitness Progression (Generation {self.generation})')
+        plt.xlabel('Generation')
+        plt.ylabel('Fitness Score')
+        plt.legend()
+        plt.grid(True, alpha=0.3)
+        plt.show()
 
 
     
