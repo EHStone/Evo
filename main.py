@@ -22,6 +22,6 @@ impossible_instances = impossible_instances_all['impossible_instances']
 
 for instance in impossible_instances:
     # if len(instance['cylinders']) > 4: ## use instance with more cylinders to test crossover
-    ga = genAlgo.GeneticAlgorithm(instance, population_size = 5, mutation_rate = 0.01)
+    ga = genAlgo.GeneticAlgorithm(instance, population_size = 5, mutation_rate = 1.1)
     generations_needed = ga.run_until_solution(verbose=True)
     

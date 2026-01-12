@@ -137,12 +137,21 @@ class GeneticAlgorithm:
         child = [[child_order],[child_pos], -1]
         return child
     
-    def mutate(self, genome: List[int]) -> List[int]:
-        """Bit-flip mutation with given probability"""
-        mutated = genome.copy()
-        for i in range(len(mutated)):
-            if random.random() < self.mutation_rate:
-                mutated[i] = 1 - mutated[i]  # Flip bit
+    def mutate(self, genome):
+        """swap mutation with given probability"""
+        mutated_order = genome[0].copy()
+        mutated_pos = genome[1].copy()
+        if random.random() < self.mutation_rate:
+            pos1 = random.randint(0, len(genome[0])-1)
+            pos2 = random.randint(0, len(genome[0])-1)
+            while pos2 == pos1:
+                pos2 = random.randint(0, len(genome[0])-1)
+            print(pos1, pos2)
+            mutated_order[pos1] = genome[0][pos2]
+            mutated_order[pos2] = genome[0][pos1]
+            mutated_pos[pos1] = genome[1][pos2]
+            mutated_pos[pos2] = genome[1][pos1]
+        mutated = [mutated_order, mutated_pos, -1]
         return mutated
     
     def print_population(self) -> None:
@@ -193,9 +202,12 @@ class GeneticAlgorithm:
         self.initialize_population()
         fitness_values = [self.fitness(pos) for pos in range(0, len(self.population_order))] ## change this to counter
         # print(self.tournament_selection(tournament_size=self.population_size)) ## Test tournament selection
-        print(self.population[0], f'\n', self.population[3], f'\n\n')
-        # vis.visualise_container(self.instance, com_x = com_X, com_y = com_Y, placed_cylinders=self.population[0][0])
-        print(self.crossover(self.population[0], self.population[3]))
+        # print(self.population[0], f'\n', self.population[3], f'\n\n')
+        # print(self.crossover(self.population[0], self.population[3]))
+
+        print(self.population[0], f'\n')
+        print(self.mutate(self.population[0]))
+
         # if verbose:
         #     self.print_population()
         
