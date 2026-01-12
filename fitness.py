@@ -129,7 +129,7 @@ def check_fitness(instance, solution, verbose = False):
 
     # Adjust weights to prioritise packing density vs COM balancing 
     w_pack = 0.7
-    w_bal = 0.3
+    w_bal = 1#0.3
     
     # fitness += (w_pack * density_cost) + (w_bal * balance_cost)
 
