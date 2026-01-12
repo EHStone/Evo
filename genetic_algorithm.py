@@ -21,11 +21,13 @@ random.seed(42)
 np.random.seed(42)
 
 class GeneticAlgorithm:
-    def __init__(self, instance: int, population_size: int, mutation_rate: float):
+    def __init__(self, instance: int, population_size: int, order_mutation_rate: float, pos_mutation_rate: float, pos_mutation_dist: float):
         self.instance = instance
         self.all_cylinders = []
         self.population_size = population_size
-        self.mutation_rate = mutation_rate
+        self.order_mutation_rate = order_mutation_rate
+        self.pos_mutation_rate = pos_mutation_rate
+        self.pos_mutation_dist = pos_mutation_dist
         self.population = [] ## matrix with elements [ [ solution[], solution_positions[], and fitness ] [...] [...] ...]
         # self.population_order = []
         # self.population_positions = []
@@ -141,11 +143,11 @@ class GeneticAlgorithm:
         child = [child_order, child_pos]
         return child
     
-    def mutate(self, genome):
+    def mutate_order(self, genome):
         """swap mutation with given probability"""
         mutated_order = genome[0].copy()
         mutated_pos = genome[1].copy()
-        if random.random() < self.mutation_rate:
+        if random.random() < self.order_mutation_rate:
             pos1 = random.randint(0, len(genome[0])-1)
             pos2 = random.randint(0, len(genome[0])-1)
             while pos2 == pos1:
@@ -156,6 +158,26 @@ class GeneticAlgorithm:
             mutated_pos[pos2] = genome[1][pos1]
         mutated = [mutated_order, mutated_pos]
         return mutated
+    
+    def mutate_pos(self, genome):
+        mutated_pos = genome[1].copy()
+        for i in range(len(mutated_pos)):
+            if random.random() < self.pos_mutation_rate:
+                current_x, current_y = mutated_pos[i]
+
+                ## set position shift distance based on a ratio of container size and mutation distance weight value
+                x_shift = random.uniform(-self.cont_w * self.pos_mutation_dist, self.cont_w * self.pos_mutation_dist)
+                y_shift = random.uniform(-self.cont_h * self.pos_mutation_dist, self.cont_h * self.pos_mutation_dist)
+
+                new_x = current_x + x_shift
+                new_y = current_y + y_shift
+
+                new_x = max(genome[0][i].radius, min(self.cont_w - genome[0][i].radius, new_x))
+                new_y = max(genome[0][i].radius, min(self.cont_h - genome[0][i].radius, new_y))
+
+                mutated_pos[i] = (new_x, new_y)
+        mutated_genome = [genome[0], mutated_pos]
+        return mutated_genome
     
     def print_population(self) -> None:
         """Print current population with fitness values"""
@@ -189,8 +211,12 @@ class GeneticAlgorithm:
             child1 = self.crossover(parent1, parent2)
             
             # Mutation
-            child1 = self.mutate(child1)
+            child1 = self.mutate_order(child1)
             # child2 = self.mutate(child2)
+
+            child1 = self.mutate_pos(child1)
+
+
             new_population.append(child1)
         
         # Keep population size exact
@@ -214,11 +240,12 @@ class GeneticAlgorithm:
                     print(f"\n*** SOLUTION FOUND in {self.generation} generations! ***")
                 return self.generation
             
-            if verbose and (self.generation % 100 == 0 or self.generation < 5):
-                self.print_population()
+            # if verbose and (self.generation % 100 == 0 or self.generation < 5):
+            #     self.print_population()
 
 
         if verbose:
+            self.print_population()
             print(f"\nMax generations ({max_generations}) reached without finding solution.")
         return max_generations
 
