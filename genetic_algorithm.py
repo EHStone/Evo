@@ -69,7 +69,7 @@ class GeneticAlgorithm:
         fitness += fitness_score
         vis.visualise_container(self.instance, show_vis = verbose, com_x = com_X, com_y = com_Y, placed_cylinders=placed_cylinders)
         # self.population[pos].append(fitness)
-        return fitness#, com_X, com_Y
+        return round(fitness, 2)#, com_X, com_Y
     
     def initialize_population(self) -> None:
         """Initialize population with order and positions"""
@@ -103,7 +103,7 @@ class GeneticAlgorithm:
         """Select parent using tournament selection"""
         tournament = random.sample(self.population, tournament_size)
         lst_pos = 0 
-        best_fitness = 1000
+        best_fitness = 10000000000
         all_fitness = [] ## for testing only
         for i in tournament:
             # fitness = i[2]
@@ -259,7 +259,7 @@ class GeneticAlgorithm:
         
         return False
     
-    def run_until_solution(self, max_generations: int = 10000, verbose: bool = True) -> int:
+    def run_until_solution(self, max_generations: int = 1000, verbose: bool = True) -> int:
         """Run GA until solution is found or max generations reached"""
         self.generation = 0
         self.initialize_population()

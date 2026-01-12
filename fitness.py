@@ -102,14 +102,14 @@ def check_fitness(instance, solution, verbose = False):
 
     ## ------------------ Packing Density ------------- ##
 
-    # calculate density score (higher density = lower cost)
-    container_area = instance['container']['width'] * instance['container']['depth'] 
+    # # calculate density score (higher density = lower cost)
+    # container_area = instance['container']['width'] * instance['container']['depth'] 
     
-    packed_area = sum(math.pi * (cyl.radius ** 2) for cyl in solution)
+    # packed_area = sum(math.pi * (cyl.radius ** 2) for cyl in solution)
     
-    ## density ratio: 0.0 (empty container) to 1.0 (full container)
-    ## Inverted to minimise score to match lower fitness being good: (1 - density)
-    density_cost = 1.0 - (packed_area / container_area)
+    # ## density ratio: 0.0 (empty container) to 1.0 (full container)
+    # ## Inverted to minimise score to match lower fitness being good: (1 - density)
+    # density_cost = 1.0 - (packed_area / container_area)
 
 
 
@@ -131,9 +131,11 @@ def check_fitness(instance, solution, verbose = False):
     w_pack = 0.7
     w_bal = 0.3
     
-    fitness += (w_pack * density_cost) + (w_bal * balance_cost)
+    # fitness += (w_pack * density_cost) + (w_bal * balance_cost)
+
+    fitness +=  (w_bal * balance_cost)
     if valid == "":
         valid = "Success, "
     if verbose:
-        print(f"{valid}Fitness: {fitness}")
+        print(f"{valid}Fitness: {round(fitness, 2)}")
     return fitness, com_X, com_Y
