@@ -63,7 +63,7 @@ def check_rear_loading(solution):
     return num_inaccessible
                 
 
-def check_fitness(instance, solution):
+def check_fitness(instance, solution, verbose = False):
     fitness = 0
     valid = ""
     if not solution:
@@ -134,5 +134,6 @@ def check_fitness(instance, solution):
     fitness += (w_pack * density_cost) + (w_bal * balance_cost)
     if valid == "":
         valid = "Success, "
-    print(f"{valid}Fitness: {fitness}")
+    if verbose:
+        print(f"{valid}Fitness: {fitness}")
     return fitness, com_X, com_Y

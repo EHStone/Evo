@@ -27,8 +27,8 @@ class GeneticAlgorithm:
         self.population_size = population_size
         self.mutation_rate = mutation_rate
         self.population = [] ## matrix with elements [ [ solution[], solution_positions[], and fitness ] [...] [...] ...]
-        self.population_order = []
-        self.population_positions = []
+        # self.population_order = []
+        # self.population_positions = []
         self.generation = 0
         self.box_x, self.box_y, self.box_w, self.box_h = vis.visualise_container(instance, show_vis=False)
         self.cont_w = instance['container']['width']
@@ -38,11 +38,17 @@ class GeneticAlgorithm:
             cyl = cylinder.Cylinder(data['id'], data['diameter'], data['weight'])
             self.all_cylinders.append(cyl)
 
-    def fitness(self, pos) -> int:
+    def fitness(self, pos = None, genome = None, verbose = False) -> int:
         fitness = 0
-        genome_order = self.population_order[pos]
-        genome_pos = self.population_positions[pos]
-
+        if pos is not None:
+            # genome_order = self.population_order[pos]
+            # genome_pos = self.population_positions[pos]
+            genome_order = self.population[pos][0]
+            genome_pos = self.population[pos][1]
+        if genome is not None:
+            genome_order = genome[0]
+            genome_pos = genome[1]
+           
         placed_cylinders = []
         iter = 0
         for cyl in genome_order:
@@ -51,11 +57,11 @@ class GeneticAlgorithm:
             cyl.id = iter
             iter += 1
             placed_cylinders.append(cyl)
-        fitness_score, com_X, com_Y = fitness_calc.check_fitness(self.instance, placed_cylinders)
+        fitness_score, com_X, com_Y = fitness_calc.check_fitness(self.instance, placed_cylinders, verbose)
         fitness += fitness_score
-        vis.visualise_container(self.instance, show_vis = False, com_x = com_X, com_y = com_Y, placed_cylinders=placed_cylinders)
-        self.population[pos].append(fitness)
-        return fitness, com_X, com_Y
+        vis.visualise_container(self.instance, show_vis = verbose, com_x = com_X, com_y = com_Y, placed_cylinders=placed_cylinders)
+        # self.population[pos].append(fitness)
+        return fitness#, com_X, com_Y
     
     def initialize_population(self) -> None:
         """Initialize population with order and positions"""
@@ -69,9 +75,9 @@ class GeneticAlgorithm:
             random.shuffle(genome)
             for i in genome:
                 genome_id.append(i.id)
-            self.population_order.append(genome)
+            # self.population_order.append(genome)
             solution = self.place_cylinders_init(genome)
-            self.population_positions.append(solution)
+            # self.population_positions.append(solution)
             self.population.append([genome, solution])
 
     def place_cylinders_init(self, genome):
@@ -92,16 +98,14 @@ class GeneticAlgorithm:
         best_fitness = 1000
         all_fitness = [] ## for testing only
         for i in tournament:
-            fitness = i[2]
-            all_fitness.append(fitness) ## For testing only
+            # fitness = i[2]
+            fitness = self.fitness(genome=i)
+            # all_fitness.append(fitness) ## For testing only
             if fitness < best_fitness:
                 best_genome_pos = lst_pos
                 best_fitness = fitness
             lst_pos += 1
-        return tournament[best_genome_pos], all_fitness ##remove all_fitness when running
-    
-
-    ##---------------------------------------------------------------------------##
+        return tournament[best_genome_pos]#, all_fitness ##remove all_fitness when running
 
     ## modified version of week 5 crossover code 
     def crossover(self, parent1, parent2, parent1_sample_size = 2):
@@ -134,7 +138,7 @@ class GeneticAlgorithm:
                 child_order[i] = parent2_gene_order[j]
                 child_pos[i] = parent2_gene_pos[j]
                 j += 1
-        child = [[child_order],[child_pos], -1]
+        child = [child_order, child_pos]
         return child
     
     def mutate(self, genome):
@@ -146,31 +150,31 @@ class GeneticAlgorithm:
             pos2 = random.randint(0, len(genome[0])-1)
             while pos2 == pos1:
                 pos2 = random.randint(0, len(genome[0])-1)
-            print(pos1, pos2)
             mutated_order[pos1] = genome[0][pos2]
             mutated_order[pos2] = genome[0][pos1]
             mutated_pos[pos1] = genome[1][pos2]
             mutated_pos[pos2] = genome[1][pos1]
-        mutated = [mutated_order, mutated_pos, -1]
+        mutated = [mutated_order, mutated_pos]
         return mutated
     
     def print_population(self) -> None:
         """Print current population with fitness values"""
         print(f"\nGeneration {self.generation}:")
-        fitness_values = [self.fitness(genome) for genome in self.population] ## change this to counter
-        
-        # Sort by fitness (descending)
-        sorted_pop = sorted(zip(self.population, fitness_values), key=lambda x: x[1], reverse=True)
-        
+        fitness_values = [self.fitness(pos) for pos in range(0, len(self.population))] ## change this to counter
+        # Sort by fitness (ascending)
+        sorted_pop = sorted(zip(self.population, fitness_values), key=lambda x: x[1])
+        print(len(self.population))
         print(f"Best fitness: {sorted_pop[0][1]} | Genome: {''.join(map(str, sorted_pop[0][0]))}")
+        self.fitness(genome = sorted_pop[0][0], verbose = True)
         print(f"Average fitness: {np.mean(fitness_values):.2f}")
         print(f"Population diversity: {len(set([''.join(map(str, g)) for g in self.population]))} unique genomes")
     
     def run_single_generation(self) -> bool:
         """Run one generation of the GA. Returns True if solution found."""
         # Check if we've found the optimal solution
-        max_fitness = max(self.fitness(genome) for genome in self.population)
-        if max_fitness == self.string_length:
+        # min_fitness = min(self.fitness(genome) for genome in self.population)
+        min_fitness = min(self.fitness(pos) for pos in range(0, len(self.population)))
+        if min_fitness == 0:
             return True
         
         # Create new population
@@ -182,13 +186,12 @@ class GeneticAlgorithm:
             parent2 = self.tournament_selection()
             
             # Crossover
-            child1, child2 = self.crossover(parent1, parent2)
+            child1 = self.crossover(parent1, parent2)
             
             # Mutation
             child1 = self.mutate(child1)
-            child2 = self.mutate(child2)
-            
-            new_population.extend([child1, child2])
+            # child2 = self.mutate(child2)
+            new_population.append(child1)
         
         # Keep population size exact
         self.population = new_population[:self.population_size]
@@ -200,29 +203,23 @@ class GeneticAlgorithm:
         """Run GA until solution is found or max generations reached"""
         self.generation = 0
         self.initialize_population()
-        fitness_values = [self.fitness(pos) for pos in range(0, len(self.population_order))] ## change this to counter
-        # print(self.tournament_selection(tournament_size=self.population_size)) ## Test tournament selection
-        # print(self.population[0], f'\n', self.population[3], f'\n\n')
-        # print(self.crossover(self.population[0], self.population[3]))
-
-        print(self.population[0], f'\n')
-        print(self.mutate(self.population[0]))
 
         # if verbose:
         #     self.print_population()
         
-        # while self.generation < max_generations:
-        #     if self.run_single_generation():
-        #         if verbose:
-        #             self.print_population()
-        #             print(f"\n*** SOLUTION FOUND in {self.generation} generations! ***")
-        #         return self.generation
+        while self.generation < max_generations:
+            if self.run_single_generation():
+                if verbose:
+                    self.print_population()
+                    print(f"\n*** SOLUTION FOUND in {self.generation} generations! ***")
+                return self.generation
             
-        #     if verbose and (self.generation % 10 == 0 or self.generation < 5):
-        #         self.print_population()
-        
-        # if verbose:
-        #     print(f"\nMax generations ({max_generations}) reached without finding solution.")
+            if verbose and (self.generation % 100 == 0 or self.generation < 5):
+                self.print_population()
+
+
+        if verbose:
+            print(f"\nMax generations ({max_generations}) reached without finding solution.")
         return max_generations
 
 
