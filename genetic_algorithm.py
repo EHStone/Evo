@@ -90,29 +90,52 @@ class GeneticAlgorithm:
         tournament = random.sample(self.population, tournament_size)
         lst_pos = 0 
         best_fitness = 1000
-        all_fitness = []
+        all_fitness = [] ## for testing only
         for i in tournament:
             fitness = i[2]
-            all_fitness.append(fitness)
+            all_fitness.append(fitness) ## For testing only
             if fitness < best_fitness:
                 best_genome_pos = lst_pos
                 best_fitness = fitness
             lst_pos += 1
-        return tournament[best_genome_pos], all_fitness
+        return tournament[best_genome_pos], all_fitness ##remove all_fitness when running
     
 
     ##---------------------------------------------------------------------------##
 
-    
-    def crossover(self, parent1: List[int], parent2: List[int]) -> Tuple[List[int], List[int]]:
-        """Single-point crossover"""
-        if len(parent1) <= 1:
-            return parent1.copy(), parent2.copy()
+    ## modified version of week 5 crossover code 
+    def crossover(self, parent1, parent2, parent1_sample_size = 2):
+        """
+        Alternative implementation of ordered crossover.
+        """
+        size = len(parent1[0])
+        start, end = sorted(random.sample(range(size + 1), parent1_sample_size))
         
-        crossover_point = random.randint(1, len(parent1) - 1)
-        child1 = parent1[:crossover_point] + parent2[crossover_point:]
-        child2 = parent2[:crossover_point] + parent1[crossover_point:]
-        return child1, child2
+        # Copy substring from parent1
+        child_order = [None] * size
+        child_pos = [None] * size
+        child_order[start:end] = parent1[0][start:end]
+        child_pos[start:end] = parent1[1][start:end]
+        
+        # Fill remaining positions with genes from parent2
+        parent2_gene_order = []#[gene for gene in parent2[0] if gene not in child_order]
+        parent2_gene_pos = []#[gene for gene in parent2[0] if gene not in child_order]
+        iter = 0
+        for gene in parent2[0]:
+            if gene not in child_order:
+                parent2_gene_order.append(gene)
+                parent2_gene_pos.append(parent2[1][iter])
+            iter += 1
+        
+        # Insert remaining genes
+        j = 0
+        for i in range(size):
+            if child_order[i] is None:
+                child_order[i] = parent2_gene_order[j]
+                child_pos[i] = parent2_gene_pos[j]
+                j += 1
+        child = [[child_order],[child_pos], -1]
+        return child
     
     def mutate(self, genome: List[int]) -> List[int]:
         """Bit-flip mutation with given probability"""
@@ -169,7 +192,10 @@ class GeneticAlgorithm:
         self.generation = 0
         self.initialize_population()
         fitness_values = [self.fitness(pos) for pos in range(0, len(self.population_order))] ## change this to counter
-        print(self.tournament_selection(tournament_size=3)) ## Test tournament selection
+        # print(self.tournament_selection(tournament_size=self.population_size)) ## Test tournament selection
+        print(self.population[0], f'\n', self.population[3], f'\n\n')
+        # vis.visualise_container(self.instance, com_x = com_X, com_y = com_Y, placed_cylinders=self.population[0][0])
+        print(self.crossover(self.population[0], self.population[3]))
         # if verbose:
         #     self.print_population()
         
