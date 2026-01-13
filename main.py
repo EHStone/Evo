@@ -14,14 +14,6 @@ impossible_instances = impossible_instances_all['impossible_instances']
 # for instance in basic_instances:
 #     baseline.run_baseline(instance)
 
-
-for instance in basic_instances:
-    mhd.run_mhd(instance)
-for instance in advanced_instances:
-    mhd.run_mhd(instance)
-for instance in impossible_instances:
-    mhd.run_mhd(instance)
-
 # for instance in advanced_instances:
 #     baseline.run_baseline(instance)
 
@@ -29,27 +21,34 @@ for instance in impossible_instances:
 # for instance in impossible_instances:
 #     baseline.run_baseline(instance)
 
-# inst_iter = 1
 # for instance in basic_instances:
-#     # if len(instance['cylinders']) > 4: ## use instance with more cylinders to test crossover
-#     print("Running Basic instance number ", inst_iter)
-#     inst_iter += 1
-#     ga = genAlgo.GeneticAlgorithm(instance, population_size = 100, order_mutation_rate = .1, pos_mutation_rate = 0.15, pos_mutation_dist = 0.05)
-#     generations_needed = ga.run_until_solution(verbose=True)
-
-# inst_iter = 1
+#     mhd.run_mhd(instance)
 # for instance in advanced_instances:
-#     # if len(instance['cylinders']) > 4: ## use instance with more cylinders to test crossover
-#     print("Running Advanced instance number ", inst_iter)
-#     inst_iter += 1
-#     ga = genAlgo.GeneticAlgorithm(instance, population_size = 100, order_mutation_rate = .1, pos_mutation_rate = 0.15, pos_mutation_dist = 0.05)
-#     generations_needed = ga.run_until_solution(verbose=True)
-
-# inst_iter = 1
+#     mhd.run_mhd(instance)
 # for instance in impossible_instances:
-#     # if len(instance['cylinders']) > 4: ## use instance with more cylinders to test crossover
-#     print("Running Impossible instance number ", inst_iter)
-#     inst_iter += 1
-#     ga = genAlgo.GeneticAlgorithm(instance, population_size = 100, order_mutation_rate = .1, pos_mutation_rate = 0.15, pos_mutation_dist = 0.05)
-#     generations_needed = ga.run_until_solution(verbose=True)
+#     mhd.run_mhd(instance)
+
+inst_iter = 1
+for instance in basic_instances:
+    # if len(instance['cylinders']) > 4: ## use instance with more cylinders to test crossover
+    print("Running Basic instance number ", inst_iter)
+    inst_iter += 1
+    ga = genAlgo.GeneticAlgorithm(instance, population_size = 100, order_mutation_rate = .1, pos_mutation_rate = 0.15, pos_mutation_dist = 0.05)
+    generations_needed = ga.run_until_solution(verbose=True)
+
+inst_iter = 1
+for instance in advanced_instances:
+    # if len(instance['cylinders']) > 4: ## use instance with more cylinders to test crossover
+    print("Running Advanced instance number ", inst_iter)
+    inst_iter += 1
+    ga = genAlgo.GeneticAlgorithm(instance, population_size = 100, order_mutation_rate = .1, pos_mutation_rate = 0.15, pos_mutation_dist = 0.05)
+    generations_needed = ga.run_until_solution(verbose=True)
+
+inst_iter = 1
+for instance in impossible_instances:
+    # if len(instance['cylinders']) > 4: ## use instance with more cylinders to test crossover
+    print("Running Impossible instance number ", inst_iter)
+    inst_iter += 1
+    ga = genAlgo.GeneticAlgorithm(instance, population_size = 100, order_mutation_rate = .1, pos_mutation_rate = 0.15, pos_mutation_dist = 0.05)
+    generations_needed = ga.run_until_solution(verbose=True)
     

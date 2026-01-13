@@ -283,7 +283,7 @@ class GeneticAlgorithm:
             self.print_population(show_best = True)
             print(f"\nMax generations ({max_generations}) reached without finding solution.")
 
-        self.plot_fitness_graph() # Plot even if solution not found
+            self.plot_fitness_graph() # Plot even if solution not found
         return max_generations
     
     def plot_fitness_graph(self):
