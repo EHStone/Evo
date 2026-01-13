@@ -102,16 +102,32 @@ def check_fitness(instance, solution, verbose = False):
 
     ## ------------------ Packing Density ------------- ##
 
-    # # calculate density score (higher density = lower cost)
-    # container_area = instance['container']['width'] * instance['container']['depth'] 
-    
-    # packed_area = sum(math.pi * (cyl.radius ** 2) for cyl in solution)
-    
-    # ## density ratio: 0.0 (empty container) to 1.0 (full container)
-    # ## Inverted to minimise score to match lower fitness being good: (1 - density)
-    # density_cost = 1.0 - (packed_area / container_area)
+    # # Calculate the extent of the solution (Bounding Box)
+    # # We use list comprehensions to find the min/max extents including the radius
+    # sol_min_x = min([c.x - c.radius for c in solution])
+    # sol_max_x = max([c.x + c.radius for c in solution])
+    # sol_min_y = min([c.y - c.radius for c in solution])
+    # sol_max_y = max([c.y + c.radius for c in solution])
 
+    # # Calculate Areas
+    # bbox_width = sol_max_x - sol_min_x
+    # bbox_height = sol_max_y - sol_min_y
+    
+    # # Protect against zero-area (single point) issues, though unlikely with radii > 0
+    # bbox_area = bbox_width * bbox_height
+    # if bbox_area <= 0:
+    #     bbox_area = 1e-9 
 
+    # # Sum of areas of actual cylinders (Area = pi * r^2)
+    # total_cyl_area = sum([math.pi * (c.radius ** 2) for c in solution])
+
+    # # Density Ratio: How much of the bounding box is filled? (0.0 to ~0.90)
+    # density_ratio = total_cyl_area / bbox_area
+
+    # # Density Cost: Invert so that Higher Density = Lower Cost
+    # # If cylinders are far apart, bbox_area is huge, ratio is small, cost is ~1.0
+    # # If cylinders are touching, bbox_area is small, ratio is high, cost is ~0.2
+    # density_cost = 1.0 - density_ratio
 
     ## ------------------ COM Centralisation ------------- ##
 
@@ -128,8 +144,8 @@ def check_fitness(instance, solution, verbose = False):
     ## ---------------- final fitness calc -------------- ##
 
     # Adjust weights to prioritise packing density vs COM balancing 
-    w_pack = 0.7
-    w_bal = 1#0.3
+    w_pack = 1
+    w_bal = 1
     
     # fitness += (w_pack * density_cost) + (w_bal * balance_cost)
 
@@ -137,5 +153,6 @@ def check_fitness(instance, solution, verbose = False):
     if valid == "":
         valid = "Success, "
     if verbose:
+        # print(density_cost, ' ', balance_cost)
         print(f"{valid}Fitness: {round(fitness, 2)}")
     return fitness, com_X, com_Y

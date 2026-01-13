@@ -62,7 +62,7 @@ class GeneticAlgorithm:
         for cyl in genome_order:
             # print(cyl)
             cyl.set_position(genome_pos[iter][0], genome_pos[iter][1])
-            cyl.id = iter
+            # cyl.id = iter
             iter += 1
             placed_cylinders.append(cyl)
         fitness_score, com_X, com_Y = fitness_calc.check_fitness(self.instance, placed_cylinders, verbose)
