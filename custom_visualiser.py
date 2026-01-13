@@ -88,15 +88,8 @@ def visualise_container(instance, show_vis = True, com_x = 0, com_y = 0, placed_
             the_table.scale(1, 1.5)
             the_table.auto_set_font_size(False)
             the_table.set_fontsize(9)
-
-            # 3. Adjust the main plot layout to make room for the table
-            # 'right=0.7' means the plot takes up 70% of the width, leaving 30% for the table
+            
             plt.subplots_adjust(left=0.05, right=0.75)
         plt.show()
 
     return box_x, box_y, box_w, box_h
-
-# ## Fetch instances from provided file and test visualiser
-# all_instances = inst.generate_all_instances()
-# basic_instances = all_instances['basic_instances']
-# visualise_container(basic_instances[0])

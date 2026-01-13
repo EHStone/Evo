@@ -6,38 +6,6 @@ import cylinder
 import numpy as np
 import random
 
-# ## Fetch instances from provided file and test visualiser
-# all_instances = inst.generate_all_instances(False)
-# basic_instances = all_instances['basic_instances']
-
-# ## Visualise container and fetch center 60% dimensions / co-ords
-# current_inst = basic_instances[0] 
-
-
-
-# class Cylinder:
-#     def __init__(self, id, diameter, weight):
-#         self.id = id
-#         self.diameter = diameter
-#         self.radius = diameter / 2.0
-#         self.weight = weight
-#         self.x = 0
-#         self.y = 0
-#         self.color = (random.random(), random.random(), random.random()) # For visualisation
-
-#     def set_position(self, x, y):
-#         self.x = x
-#         self.y = y
-
-#     def distance_to(self, other):
-#         return np.sqrt((self.x - other.x)**2 + (self.y - other.y)**2)
-
-#     def overlaps(self, other):
-#         dist = self.distance_to(other)
-#         # Check if distance is less than sum of radii (with slight buffer)
-#         return dist < (self.radius + other.radius + 0.05) 
-
-
 def run_baseline(current_inst):
 
     box_x, box_y, box_w, box_h = vis.visualise_container(current_inst, show_vis=False)

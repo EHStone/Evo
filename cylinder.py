@@ -22,4 +22,4 @@ class Cylinder:
     def overlaps(self, other):
         dist = self.distance_to(other)
         # Check if distance is less than sum of radii (with slight buffer)
-        return dist < (self.radius + other.radius + 0.05) 
+        return dist < (self.radius + other.radius-0.00001) 
