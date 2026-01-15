@@ -6,7 +6,7 @@ import cylinder
 import numpy as np
 import random
 
-def run_baseline(current_inst):
+def run_baseline(current_inst, verbose=True):
 
     box_x, box_y, box_w, box_h = vis.visualise_container(current_inst, show_vis=False)
     center_point = (box_x+box_w/2, box_y+box_h/2)
@@ -71,8 +71,15 @@ def run_baseline(current_inst):
                         break 
             
             if not placed:
-                print(f"Could not place Cylinder {cyl.id} after {max_attempts} attempts.") 
-    print(f"Total number of attempts failed: {total_attempts}")
-    fitness_score, com_X, com_Y = fitness.check_fitness(current_inst, placed_cylinders, verbose=True)
-    vis.visualise_container(current_inst, com_x = com_X, com_y = com_Y, placed_cylinders=placed_cylinders)
+                if verbose:
+                    print(f"Could not place Cylinder {cyl.id} after {max_attempts} attempts.") 
+                
+    if verbose:
+        print(f"Total number of attempts failed: {total_attempts}")
+    fitness_score, com_X, com_Y = fitness.check_fitness(current_inst, placed_cylinders, verbose=verbose)
+    vis.visualise_container(current_inst, show_vis=verbose, com_x = com_X, com_y = com_Y, placed_cylinders=placed_cylinders)
+    if fitness_score > 9:
+        return False, fitness_score
+    else:
+        return True, fitness_score
 

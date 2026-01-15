@@ -54,7 +54,7 @@ def find_candidate_positions(placed_cylinders, new_cyl, cont_w, cont_h, center_p
     # If only 1 cylinder is placed, place strictly around it
     if len(placed_cylinders) == 1:
         c1 = placed_cylinders[0]
-        dist = c1.radius + new_cyl.radius + 0.1
+        dist = c1.radius + new_cyl.radius + 0.001
         # Try 36 positions around the first cylinder
         for angle in np.linspace(0, 2*np.pi, 36, endpoint=False):
             x = c1.x + dist * np.cos(angle)
@@ -64,12 +64,20 @@ def find_candidate_positions(placed_cylinders, new_cyl, cont_w, cont_h, center_p
     else:
         # Iterate through all pairs of placed cylinders to find "nooks"
         for i in range(len(placed_cylinders)):
+            c1 = placed_cylinders[i]
             for j in range(i + 1, len(placed_cylinders)):
-                c1 = placed_cylinders[i]
+                
                 c2 = placed_cylinders[j]
                 
                 points = get_tangent_positions(c1, c2, new_cyl.radius)
                 candidates.extend(points)
+            dist = c1.radius + new_cyl.radius + 0.001
+            for angle in np.linspace(0, 2*np.pi, 36, endpoint=False):
+                x = c1.x + dist * np.cos(angle)
+                y = c1.y + dist * np.sin(angle)
+                candidates.append((x, y))
+        # for i in placed_cylinders:
+
 
     # Filter and Validate Candidates
     valid_positions = []
@@ -104,7 +112,7 @@ def find_candidate_positions(placed_cylinders, new_cyl, cont_w, cont_h, center_p
 
 # --- Main Algorithm ---
 
-def run_mhd(current_inst):
+def run_mhd(current_inst, verbose=True):
 
     box_x, box_y, box_w, box_h = vis.visualise_container(current_inst, show_vis=False)
     center_point = (box_x + box_w/2, box_y + box_h/2)
@@ -157,7 +165,12 @@ def run_mhd(current_inst):
                     break 
             
             if not placed:
-                print(f"Could not place Cylinder {cyl.id} (No valid geometric slot found).") 
+                if verbose: print(f"Could not place Cylinder {cyl.id} (No valid geometric slot found).") 
+                # return False
 
-    fitness_score, com_X, com_Y = fitness.check_fitness(current_inst, placed_cylinders, verbose=True)
-    vis.visualise_container(current_inst, com_x=com_X, com_y=com_Y, placed_cylinders=placed_cylinders)
+    fitness_score, com_X, com_Y = fitness.check_fitness(current_inst, placed_cylinders, verbose=verbose)
+    vis.visualise_container(current_inst, show_vis=verbose, com_x=com_X, com_y=com_Y, placed_cylinders=placed_cylinders)
+    if fitness_score > 9:
+        return False, fitness_score
+    else:
+        return True, fitness_score

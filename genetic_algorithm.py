@@ -99,7 +99,7 @@ class GeneticAlgorithm:
 
         return solution
 
-    def tournament_selection(self, tournament_size: int = 3) -> List[int]:
+    def tournament_selection(self, tournament_size: int = 5) -> List[int]:
         """Select parent using tournament selection"""
         tournament = random.sample(self.population, tournament_size)
         lst_pos = 0 
@@ -273,7 +273,7 @@ class GeneticAlgorithm:
                     self.print_population()
                     print(f"\n*** SOLUTION FOUND in {self.generation} generations! ***")
                     self.plot_fitness_graph() # Plot even if solution not found
-                return self.generation
+                return self.generation, True, 0
             
             # if verbose and (self.generation % 100 == 0 or self.generation < 5):
             #     self.print_population()
@@ -284,7 +284,7 @@ class GeneticAlgorithm:
             print(f"\nMax generations ({max_generations}) reached without finding solution.")
 
             self.plot_fitness_graph() # Plot even if solution not found
-        return max_generations
+        return max_generations, False, self.best_fitness
     
     def plot_fitness_graph(self):
         """Generates a graph of fitness progression"""
